@@ -14,7 +14,6 @@ function App() {
         <div className="pt-20 flex flex-col gap-5 items-center">
           <btn onClick={() => {
             setCount(count + 1)
-            console.log(`Button has been clicked ${count} times`)
           }}
           ><img className='w-50 h-50 cursor-pointer' src="/smile.png" alt="" /></btn>
           <h1 className='text-white text-3xl'>Times Clicked : {count}</h1>
