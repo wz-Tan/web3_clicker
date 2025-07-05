@@ -1,12 +1,35 @@
-# React + Vite
+# Sui dApp Starter Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This dApp was created using `@mysten/create-dapp` that sets up a basic React
+Client dApp using the following tools:
 
-Currently, two official plugins are available:
+- [React](https://react.dev/) as the UI framework
+- [TypeScript](https://www.typescriptlang.org/) for type checking
+- [Vite](https://vitejs.dev/) for build tooling
+- [Radix UI](https://www.radix-ui.com/) for pre-built UI components
+- [ESLint](https://eslint.org/)
+- [`@mysten/dapp-kit`](https://sdk.mystenlabs.com/dapp-kit) for connecting to
+  wallets and loading data
+- [pnpm](https://pnpm.io/) for package management
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Starting your dApp
 
-## Expanding the ESLint configuration
+To install dependencies you can run
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+pnpm install
+```
+
+To start your dApp in development mode run
+
+```bash
+pnpm dev
+```
+
+## Building
+
+To build your app for deployment you can run
+
+```bash
+pnpm build
+```

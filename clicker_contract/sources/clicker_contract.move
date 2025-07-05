@@ -1,25 +1,32 @@
 module clicker_contract::clicker_contract;
 
-// User Struct With Click Count 
-public struct User has key{
+//Every user gets one counter
+public struct Counter has key{
     id:UID,
     owner:address,
-    click_count:u64,
-    level:u64,
+    value:u64
 }
 
-public entry fun createUser(_ctx:&mut TxContext){
-    //uid to mark item in the blockchain, address to find whos the owner 
-    let user_id=object::new(_ctx);
-    let user=User{
-        id:user_id,
-        owner:tx_context::sender(_ctx),
-        click_count:0,
-        level:0,
-    };
-
-    transfer::transfer(user,tx_context::sender(_ctx));
+public fun create(ctx:&mut TxContext){
+    transfer::share_object(
+        Counter{
+            id:object::new(ctx),
+            owner:ctx.sender(),
+            value:0
+        }
+    )
 }
 
+//Add Counter Value
+public fun increment(counter:&mut Counter){
+    counter.value=counter.value+1;
+}
+
+//Manually Set Counter Value
+public fun set_value(ctx:&mut TxContext, counter:&mut Counter, value:u64){
+    //Ensure counter belongs to the original owner, if not return error code 0
+    assert!(counter.owner==ctx.sender(),0);
+    counter.value=value;
+}
 
 
