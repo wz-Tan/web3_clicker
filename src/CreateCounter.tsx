@@ -2,7 +2,8 @@ import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
 import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "./networkConfig";
-import ClipLoader from "react-spinners/ClipLoader";
+import { Spinner } from "@radix-ui/themes";
+
 
 export function CreateCounter({ onCreated }: { onCreated: (id: string) => void }) {
     const counterPackageId = useNetworkVariable("counterPackageId");
@@ -25,11 +26,14 @@ export function CreateCounter({ onCreated }: { onCreated: (id: string) => void }
             //Call the create function in the clicker contract module
             target: `${counterPackageId}::clicker_contract::create`
         });
+        
+
 
         //Execute the transaction
         signAndExecute({ transaction: tx }, {
             //On success verify the transaction via digest (hashcode/code for the function run)
             onSuccess: async ({ digest }) => {
+                
                 //effects is the created items
                 const { effects } = await suiClient.waitForTransaction({
                     digest: digest,
@@ -51,7 +55,7 @@ export function CreateCounter({ onCreated }: { onCreated: (id: string) => void }
         <Container>
             {/* If success or pending For Txn then disable button and show the loader */}
             <Button size="3" onClick={() => create()} disabled={isSuccess||isPending}>
-                {isSuccess||isPending ? <ClipLoader size={20} /> : "Create Counter"}
+                {isSuccess||isPending ?  <Spinner/>: "Create Counter"}
             </Button>
         </Container>
     )
