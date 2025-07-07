@@ -3,6 +3,7 @@
   import { Box, Container, Flex, Heading } from "@radix-ui/themes";
   import { useState } from "react";
   import { CreateCounter } from "./CreateCounter";
+import { Counter } from "./Counter";
 
   function App() {
     const currentAccount = useCurrentAccount();
@@ -39,7 +40,7 @@
           >
             {currentAccount ? (
               counterId ? (
-                null
+                <Counter id={counterId}/>
               ) : (
                 <CreateCounter
                   onCreated={(id) => {

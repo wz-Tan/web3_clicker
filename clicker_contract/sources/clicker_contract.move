@@ -23,8 +23,7 @@ public fun increment(counter:&mut Counter){
 }
 
 //Manually Set Counter Value
-public fun set_value(ctx:&mut TxContext, counter:&mut Counter, value:u64){
-    //Ensure counter belongs to the original owner, if not return error code 0
+public fun set_value(counter:&mut Counter, value:u64,ctx:&mut TxContext){
     assert!(counter.owner==ctx.sender(),0);
     counter.value=value;
 }

@@ -1,4 +1,6 @@
-import { useCurrentAccount, useSuiClientQuery, } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient, useSuiClientQuery, } from "@mysten/dapp-kit";
+import { useNetworkVariable } from "./networkConfig";
+import { Transaction } from "@mysten/sui/transactions";
 import { SuiObjectData } from "@mysten/sui/client";
 import { Button, Flex, Heading, Text } from "@radix-ui/themes";
 import { useState } from "react";
@@ -6,7 +8,10 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 
 export function Counter({ id }: { id: string }) {
+    const counterPackageId = useNetworkVariable("counterPackageId")
+    const suiClient = useSuiClient();
     const currentAccount = useCurrentAccount();
+    const { mutate: signAndExecute } = useSignAndExecuteTransaction()
     //Get Object And Destructure the Data
     const { data, isPending, error, refetch } = useSuiClientQuery("getObject", {
         id,
@@ -20,7 +25,36 @@ export function Counter({ id }: { id: string }) {
 
     const executeMoveCall = (method: "increment" | "reset") => {
         setWaitingForTxn(method);
-        //Todo
+        const tx = new Transaction();
+        //Run the Blockchain function
+        if (method === "reset") {
+            console.log(`Running Reset .object id is ${id}`)
+            tx.moveCall({
+  			arguments: [tx.object(id), tx.pure.u64(0)],
+  			target: `${counterPackageId}::clicker_contract::set_value`,
+  		    });
+        }
+        else {
+            tx.moveCall({
+                arguments: [tx.object(id)],
+                target: `${counterPackageId}::clicker_contract::increment`
+            })
+        }
+
+        //Verify the Transaction
+        signAndExecute({ transaction: tx }, {
+            onSuccess: (tx) => {
+                //wait for transaction and get the digest (feedback)
+                suiClient.waitForTransaction({ digest: tx.digest }).then(async () => {
+                    //Refetch is refresh the value
+                    await refetch();
+                    setWaitingForTxn("")
+                }
+                )
+            }
+
+        }
+        )
     }
 
     //Display or Return Information of The Counter Object
@@ -49,26 +83,26 @@ export function Counter({ id }: { id: string }) {
             <Flex direction="column" gap="2">
                 <Text>Value of Counter : {getCounterFields(data.data)?.value}</Text>
                 <Flex direction="row" gap="2">
-                <Button onClick={() => {
-                    executeMoveCall("increment")
-                }
-                }
-                    disabled={waitingForTxn != ""}>
-                    {waitingForTxn === "increment" ? (<ClipLoader size={20} />) : "Increment"}
-                </Button>
-                {ownedByCurrentAccount ? (
-
-                    <Button
-                        onClick={() => executeMoveCall("reset")}
-                        disabled={waitingForTxn !== ""}>
-                        {waitingForTxn === "reset" ? (
-                            <ClipLoader size={20} />
-                        ) :
-                            ("Reset")}
+                    <Button onClick={() => {
+                        executeMoveCall("increment")
+                    }
+                    }
+                        disabled={waitingForTxn != ""}>
+                        {waitingForTxn === "increment" ? (<ClipLoader size={20} />) : "Increment"}
                     </Button>
-                ) :
-                    null
-                }
+                    {ownedByCurrentAccount ? (
+
+                        <Button
+                            onClick={() => executeMoveCall("reset")}
+                            disabled={waitingForTxn !== ""}>
+                            {waitingForTxn === "reset" ? (
+                                <ClipLoader size={20} />
+                            ) :
+                                ("Reset")}
+                        </Button>
+                    ) :
+                        null
+                    }
                 </Flex>
             </Flex>
         </>
